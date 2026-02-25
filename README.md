@@ -38,10 +38,10 @@ npm run dev
 docker compose up --build
 ```
 
-- 后端 API: http://localhost:8081  
-- 前端页面: http://localhost:5174  
+- 后端 API: http://localhost:10081  
+- 前端页面: http://localhost:10075  
 
-若端口 8081 或 5174 已被占用，可修改 `docker-compose.yml` 中 `ports` 映射（如 `9081:8081`、`9075:80`），并相应调整前端构建参数 `VITE_API_BASE`（例如 `http://localhost:9081`）。
+（宿主机端口 10081/10075；若仍冲突，可改 `docker-compose.yml` 中 `ports` 与 `VITE_API_BASE`。）
 
 ## 脚本启动（可选）
 
