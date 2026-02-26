@@ -51,6 +51,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/health", cors(api.Health))
 	mux.HandleFunc("/api/fortune", cors(api.DrawFortune))
+	mux.HandleFunc("/api/fortune/ai", cors(api.DrawFortuneAI))
 	mux.HandleFunc("/api/categories", cors(api.ListCategories))
 	mux.HandleFunc("/api/auth/register", authHandlers.Register)
 	mux.HandleFunc("/api/auth/login", authHandlers.Login)
