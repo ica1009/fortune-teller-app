@@ -1,6 +1,6 @@
 # 高级算命 · Fortune Teller App
 
-前后端分离的「高级算命」占卜应用：Go 后端提供随机运势 API，React 前端提供占卜界面。
+前后端分离的「高级算命」占卜应用：Go 后端提供随机运势 API 与可选 AI 占卜（OpenAI 兼容 / DeepSeek），React 前端提供占卜界面。
 
 ## 技术栈
 
@@ -59,7 +59,15 @@ chmod +x start.sh
 | GET | `/api/health` | 健康检查 |
 | GET | `/api/categories` | 运势类别列表 |
 | GET | `/api/fortune` | 随机抽一条运势 |
-| GET | `/api/fortune?category=love` | 按类别（love/career/health/wealth/general）抽签 |
+| GET | `/api/fortune?category=love` | 按类别抽签 |
+| POST | `/api/fortune/ai` | AI 占卜，请求体可选 `{"category":"love"}`；需配置 `OPENAI_API_KEY`，否则 503 |
+
+## AI 占卜（可选）
+
+- 与 [rain-flower-calendar](https://github.com/ica1009/rain-flower-calendar) 共用同一套 Key：通过环境变量 **`OPENAI_API_KEY`**（及可选 **`OPENAI_BASE_URL`**，默认 `https://api.deepseek.com`）配置。
+- 本地运行后端时：`export OPENAI_API_KEY=your-key` 后再 `go run ./cmd/server`。
+- Docker：复制 `.env.example` 为 `.env` 并填写 `OPENAI_API_KEY`，然后 `docker compose up --build`；或直接 `OPENAI_API_KEY=your-key docker compose up --build`。
+- 未配置时前端「AI 占卜」会提示暂不可用，普通抽签不受影响。
 
 ## 后续
 

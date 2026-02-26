@@ -10,7 +10,7 @@ import (
 func cors(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)
@@ -23,6 +23,7 @@ func cors(next http.HandlerFunc) http.HandlerFunc {
 func main() {
 	http.HandleFunc("/api/health", cors(api.Health))
 	http.HandleFunc("/api/fortune", cors(api.DrawFortune))
+	http.HandleFunc("/api/fortune/ai", cors(api.DrawFortuneAI))
 	http.HandleFunc("/api/categories", cors(api.ListCategories))
 	log.Println("fortune-teller-api listening on :8081")
 	if err := http.ListenAndServe(":8081", nil); err != nil {
