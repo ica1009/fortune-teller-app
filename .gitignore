@@ -1,7 +1,6 @@
 # Go
 backend/*.exe
 backend/server
-backend/vendor/
 *.test
 *.out
 

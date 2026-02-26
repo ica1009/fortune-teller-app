@@ -1,4 +1,7 @@
 import { useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { getToken, clearToken, getApiBase, getUsernameFromToken } from './auth'
+import { AppRoutes } from './AppRoutes'
 
 interface FortuneItem {
   category: string
@@ -20,20 +23,21 @@ const CATEGORY_LABELS: Record<string, string> = {
   general: '综合',
 }
 
-function getApiBase(): string {
-  if (import.meta.env.DEV) return ''
-  return (import.meta.env.VITE_API_BASE ?? '').replace(/\/$/, '')
-}
-
-export default function App() {
+export function FortuneMain() {
+  const navigate = useNavigate()
   const [fortune, setFortune] = useState<FortuneItem | null>(null)
   const [categories, setCategories] = useState<CategoryItem[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [drawn, setDrawn] = useState(false)
-
   const apiBase = getApiBase()
+  const token = getToken()
+
+  const handleLogout = () => {
+    clearToken()
+    navigate('/login')
+  }
 
   const fetchCategories = useCallback(() => {
     fetch(`${apiBase}/api/categories`)
@@ -89,12 +93,19 @@ export default function App() {
   }
 
   const label = fortune ? CATEGORY_LABELS[fortune.category] ?? fortune.category : ''
+  const username = token ? getUsernameFromToken(token) : null
 
   return (
     <div className="app">
       <header className="header">
         <h1 className="title">🔮 高级算命</h1>
         <p className="subtitle">心诚则灵 · 抽签占卜</p>
+        {username && (
+          <p className="user-bar">
+            <span>{username}</span>
+            <button type="button" onClick={handleLogout}>退出</button>
+          </p>
+        )}
       </header>
 
       <section className="controls">
@@ -156,4 +167,8 @@ export default function App() {
       </footer>
     </div>
   )
+}
+
+export default function App() {
+  return <AppRoutes />
 }
