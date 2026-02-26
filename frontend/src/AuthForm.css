@@ -62,7 +62,8 @@
   font-size: 0.9rem;
   color: var(--text-muted, #9a94a8);
 }
-.auth-switch button {
+.auth-switch button,
+.auth-switch a {
   background: none;
   border: none;
   color: var(--accent-gold, #d4a853);
@@ -70,4 +71,7 @@
   padding: 0;
   text-decoration: underline;
   font-family: inherit;
+}
+.auth-switch a:hover {
+  color: var(--accent-gold-dim, #b8923f);
 }

@@ -1,13 +1,10 @@
 import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { getApiBase, setToken } from './auth'
 import './AuthForm.css'
 
-interface LoginProps {
-  onSuccess: () => void
-  onSwitchRegister: () => void
-}
-
-export default function Login({ onSuccess, onSwitchRegister }: LoginProps) {
+export default function Login() {
+  const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -30,7 +27,7 @@ export default function Login({ onSuccess, onSwitchRegister }: LoginProps) {
       }
       if (data.token) {
         setToken(data.token)
-        onSuccess()
+        navigate('/')
       } else {
         setError('未返回 token')
       }
@@ -72,7 +69,7 @@ export default function Login({ onSuccess, onSwitchRegister }: LoginProps) {
         </button>
       </form>
       <p className="auth-switch">
-        还没有账号？ <button type="button" onClick={onSwitchRegister}>注册</button>
+        还没有账号？ <Link to="/register">注册</Link>
       </p>
     </div>
   )

@@ -217,3 +217,15 @@ body {
   font-size: 0.8rem;
   color: var(--text-muted);
 }
+
+/* 页面切换：淡入 + 短距上滑，约 250ms */
+.page-transition {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+}
+
+.page-transition.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}

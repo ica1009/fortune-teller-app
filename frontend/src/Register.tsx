@@ -1,13 +1,10 @@
 import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { getApiBase } from './auth'
 import './AuthForm.css'
 
-interface RegisterProps {
-  onSuccess: () => void
-  onSwitchLogin: () => void
-}
-
-export default function Register({ onSuccess, onSwitchLogin }: RegisterProps) {
+export default function Register() {
+  const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -28,7 +25,7 @@ export default function Register({ onSuccess, onSwitchLogin }: RegisterProps) {
         setError(data?.error ?? res.statusText ?? '注册失败')
         return
       }
-      onSuccess()
+      navigate('/login')
     } catch (err) {
       setError(err instanceof Error ? err.message : '请求失败')
     } finally {
@@ -67,7 +64,7 @@ export default function Register({ onSuccess, onSwitchLogin }: RegisterProps) {
         </button>
       </form>
       <p className="auth-switch">
-        已有账号？ <button type="button" onClick={onSwitchLogin}>去登录</button>
+        已有账号？ <Link to="/login">去登录</Link>
       </p>
     </div>
   )
