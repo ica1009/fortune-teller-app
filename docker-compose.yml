@@ -5,6 +5,10 @@ services:
       dockerfile: Dockerfile.backend
     ports:
       - "10081:8081"
+    environment:
+      # 与 rain-flower-calendar 共用：AI 占卜需配置，未配置时「AI 占卜」接口返回 503
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://api.deepseek.com}
 
   frontend:
     build:

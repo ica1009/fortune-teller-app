@@ -1,12 +1,15 @@
-FROM golang:1.22-alpine AS build
+FROM golang:1.24-alpine AS build
 
 WORKDIR /app
 
-COPY backend/go.mod ./
+# 使用国内/备用代理，避免 proxy.golang.org 超时
+ENV GOPROXY=https://goproxy.cn,direct
+
+COPY backend/go.mod backend/go.sum ./
 COPY backend/cmd ./cmd
 COPY backend/internal ./internal
 
-RUN go mod tidy && go build -o server ./cmd/server
+RUN go mod download && go build -o server ./cmd/server
 
 FROM alpine:3.20
 

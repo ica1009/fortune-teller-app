@@ -46,6 +46,9 @@ export default function App() {
 
   if (categories.length === 0 && !loading) fetchCategories()
 
+  const readErrorFromResponse = (r: Response): Promise<never> =>
+    r.json().then((d: { error?: string }) => Promise.reject(new Error(d?.error || r.statusText))).catch(() => Promise.reject(new Error(r.statusText)))
+
   const draw = () => {
     setError(null)
     setLoading(true)
@@ -54,7 +57,29 @@ export default function App() {
       ? `${apiBase}/api/fortune?category=${encodeURIComponent(selectedCategory)}`
       : `${apiBase}/api/fortune`
     fetch(url)
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(r.statusText))))
+      .then((r) => (r.ok ? r.json() : readErrorFromResponse(r)))
+      .then((data: FortuneItem) => {
+        setFortune(data)
+        setDrawn(true)
+      })
+      .catch((e: Error) => setError(e.message))
+      .finally(() => setLoading(false))
+  }
+
+  const drawAI = () => {
+    setError(null)
+    setLoading(true)
+    setDrawn(false)
+    const category = selectedCategory || 'general'
+    fetch(`${apiBase}/api/fortune/ai`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ category }),
+    })
+      .then((r) => {
+        if (r.ok) return r.json()
+        return readErrorFromResponse(r)
+      })
       .then((data: FortuneItem) => {
         setFortune(data)
         setDrawn(true)
@@ -98,6 +123,14 @@ export default function App() {
           disabled={loading}
         >
           {loading ? '占卜中…' : '抽签占卜'}
+        </button>
+        <button
+          type="button"
+          className="draw-btn draw-btn-ai"
+          onClick={drawAI}
+          disabled={loading}
+        >
+          AI 占卜
         </button>
       </section>
 
