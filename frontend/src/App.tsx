@@ -1,4 +1,7 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
+import { getToken, clearToken, getApiBase, getUsernameFromToken } from './auth'
+import Login from './Login'
+import Register from './Register'
 
 interface FortuneItem {
   category: string
@@ -20,20 +23,15 @@ const CATEGORY_LABELS: Record<string, string> = {
   general: '综合',
 }
 
-function getApiBase(): string {
-  if (import.meta.env.DEV) return ''
-  return (import.meta.env.VITE_API_BASE ?? '').replace(/\/$/, '')
-}
-
-export default function App() {
+function FortuneMain() {
   const [fortune, setFortune] = useState<FortuneItem | null>(null)
   const [categories, setCategories] = useState<CategoryItem[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [drawn, setDrawn] = useState(false)
-
   const apiBase = getApiBase()
+  const token = getToken()
 
   const fetchCategories = useCallback(() => {
     fetch(`${apiBase}/api/categories`)
@@ -64,12 +62,19 @@ export default function App() {
   }
 
   const label = fortune ? CATEGORY_LABELS[fortune.category] ?? fortune.category : ''
+  const username = token ? getUsernameFromToken(token) : null
 
   return (
     <div className="app">
       <header className="header">
         <h1 className="title">🔮 高级算命</h1>
         <p className="subtitle">心诚则灵 · 抽签占卜</p>
+        {username && (
+          <p className="user-bar">
+            <span>{username}</span>
+            <button type="button" onClick={clearToken}>退出</button>
+          </p>
+        )}
       </header>
 
       <section className="controls">
@@ -122,5 +127,34 @@ export default function App() {
         <p>仅供娱乐 · 理性看待</p>
       </footer>
     </div>
+  )
+}
+
+export default function App() {
+  const [token, setToken] = useState<string | null>(getToken())
+  const [showRegister, setShowRegister] = useState(false)
+
+  useEffect(() => {
+    setToken(getToken())
+  }, [])
+
+  if (token) {
+    return <FortuneMain />
+  }
+
+  if (showRegister) {
+    return (
+      <Register
+        onSuccess={() => setShowRegister(false)}
+        onSwitchLogin={() => setShowRegister(false)}
+      />
+    )
+  }
+
+  return (
+    <Login
+      onSuccess={() => setToken(getToken())}
+      onSwitchRegister={() => setShowRegister(true)}
+    />
   )
 }

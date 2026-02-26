@@ -1,56 +1,47 @@
 # 高级算命 · Fortune Teller App
 
-前后端分离的「高级算命」占卜应用：Go 后端提供随机运势 API，React 前端提供占卜界面。
+前后端分离的「高级算命」占卜应用：Go 后端提供随机运势 API，React 前端提供占卜界面；支持用户注册/登录（用户名+密码，PostgreSQL，JWT）。
 
 ## 技术栈
 
-- **后端**: Go 1.22，标准库 HTTP + CORS，端口 `8081`
-- **前端**: React 18 + Vite 5 + TypeScript，端口 `5174`
-- **运行**: 支持本地直接运行或 Docker Compose 一键启动
+- **后端**: Go，标准库 HTTP + CORS，PostgreSQL 用户存储，bcrypt + JWT
+- **前端**: React 18 + Vite 5 + TypeScript
+- **运行**: Docker Compose 一键启动（含 DB），或本地起 DB + 后端 + 前端
 
-## 本地直接运行
+## Docker 一键启动（推荐）
 
-### 后端
-
-```bash
-cd backend
-go mod tidy
-go run ./cmd/server
-```
-
-服务监听 `http://localhost:8081`。
-
-### 前端
+需设置 `JWT_SECRET`（生产务必改为强随机）：
 
 ```bash
-cd frontend
-npm install
-npm run dev
+export JWT_SECRET=your-secret-key
+docker compose up -d
 ```
 
-浏览器打开 `http://localhost:5174`。开发模式下请求会通过 Vite 代理到后端 `/api`。
-
-## Docker 一键启动
-
-在项目根目录执行：
-
-```bash
-docker compose up --build
-```
-
+- 前端: http://localhost:10075  
 - 后端 API: http://localhost:10081  
-- 前端页面: http://localhost:10075  
+- 数据库: PostgreSQL 宿主机端口 5434  
 
-（宿主机端口 10081/10075；若仍冲突，可改 `docker-compose.yml` 中 `ports` 与 `VITE_API_BASE`。）
+未登录会先进入登录/注册页，登录后可抽签占卜。
 
-## 脚本启动（可选）
+## 本地开发（需 PostgreSQL）
+
+若只起数据库容器、本机跑后端与前端：
 
 ```bash
-chmod +x start.sh
-./start.sh
+docker compose up -d db
+# 等几秒后
+export DATABASE_URL="postgres://app:appsecret@localhost:5434/fortune_teller?sslmode=disable"
+export JWT_SECRET=dev-secret
+cd backend && go run ./cmd/server
 ```
 
-`start.sh` 会以后台方式启动后端与前端（需已安装 Go 与 Node），具体见脚本内容。
+另开终端：
+
+```bash
+cd frontend && npm install && npm run dev
+```
+
+浏览器打开 http://localhost:5174。开发模式下 Vite 代理 `/api` 到后端。
 
 ## API 说明
 
@@ -59,7 +50,9 @@ chmod +x start.sh
 | GET | `/api/health` | 健康检查 |
 | GET | `/api/categories` | 运势类别列表 |
 | GET | `/api/fortune` | 随机抽一条运势 |
-| GET | `/api/fortune?category=love` | 按类别（love/career/health/wealth/general）抽签 |
+| GET | `/api/fortune?category=love` | 按类别抽签 |
+| POST | `/api/auth/register` | 注册（body: username, password） |
+| POST | `/api/auth/login` | 登录（body: username, password；返回 token） |
 
 ## 后续
 
